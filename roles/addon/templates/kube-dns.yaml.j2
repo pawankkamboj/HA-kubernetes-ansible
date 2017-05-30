@@ -46,6 +46,9 @@ spec:
       containers:
       - name: kubedns
         image: gcr.io/google_containers/kubedns-amd64:1.8
+        volumeMounts:
+        - mountPath: /etc/kubernetes
+          name: kubeadminconfig
         resources:
           limits:
             memory: 170Mi
@@ -71,6 +74,7 @@ spec:
         args:
         - --domain={{ cluster_name }}.
         - --dns-port=10053
+        - --kubecfg-file={{ kubeadminconfig }}
         ports:
         - containerPort: 10053
           name: dns-udp
@@ -120,3 +124,7 @@ spec:
         - containerPort: 8080
           protocol: TCP
       dnsPolicy: Default  # Don't use cluster DNS.
+      volumes:
+      - name: kubeadminconfig
+        hostPath:
+          path: /etc/kubernetes
